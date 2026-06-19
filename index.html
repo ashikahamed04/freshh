@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>freshh. — Fresh Chicken Delivered</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
+  :root { --orange: #E8531A; --orange-light: #FFF1EB; --orange-dark: #B83F10; --dark: #1A1208; }
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+  .header { background: var(--dark); color: #fff; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 24px; font-weight: 700; letter-spacing: -1px; color: #fff; }
+  .logo span { color: var(--orange); }
+  .cart-btn { background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .cart-btn:hover { background: var(--orange-dark); }
+  .cart-count { background: #fff; color: var(--orange); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .hero { background: var(--dark); color: #fff; padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .hero-text h1 { font-size: 32px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 0.6rem; }
+  .hero-text h1 em { color: var(--orange); font-style: normal; }
+  .hero-text p { font-size: 13px; color: rgba(255,255,255,0.5); max-width: 280px; line-height: 1.6; }
+  .hero-badges { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+  .hero-badge { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 12px; font-size: 11px; }
+  .hero-img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--orange); flex-shrink: 0; }
+  .filter-bar { background: #fff; border-bottom: 0.5px solid #e0e0d8; padding: 0.65rem 1.5rem; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn { border: 0.5px solid #ccc; background: transparent; color: #555; border-radius: 20px; padding: 5px 14px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .filter-btn.active, .filter-btn:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
+  .trust-bar { background: #fff; border-bottom: 0.5px solid #e0e0d8; padding: 0.65rem 1.5rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #666; }
+  .trust-item i { color: var(--orange); font-size: 14px; }
+  .main { padding: 1.25rem 1.5rem; flex: 1; }
+  .section-title { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 3rem; }
+  .product-card { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+  .product-card:hover { border-color: var(--orange); }
+  .product-img-wrap { height: 130px; position: relative; overflow: hidden; background: #f5ede6; }
+  .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fallback { width: 100%; height: 100%; display: none; align-items: center; justify-content: center; font-size: 52px; background: var(--orange-light); }
+  .product-badge { position: absolute; top: 8px; left: 8px; background: var(--orange); color: #fff; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 4px; z-index: 1; }
+  .product-body { padding: 10px; }
+  .product-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .product-desc { font-size: 11px; color: #777; margin-bottom: 8px; line-height: 1.4; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 15px; font-weight: 500; color: var(--orange); }
+  .product-price span { font-size: 10px; color: #999; font-weight: 400; }
+  .add-btn { background: var(--dark); color: #fff; border: none; border-radius: 6px; width: 28px; height: 28px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .add-btn:hover { background: var(--orange); }
+  .qty-ctrl { display: flex; align-items: center; gap: 5px; }
+  .qty-ctrl button { background: #f0f0ea; border: 0.5px solid #ddd; border-radius: 5px; width: 24px; height: 24px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; color: #1a1a1a; }
+  .qty-ctrl span { font-size: 12px; font-weight: 500; min-width: 14px; text-align: center; }
+  .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; justify-content: flex-end; }
+  .cart-overlay.open { display: flex; }
+  .cart-panel { background: #fff; width: 340px; max-width: 95vw; height: 100%; display: flex; flex-direction: column; padding: 1.25rem; overflow-y: auto; }
+  .cart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .cart-header h2 { font-size: 17px; font-weight: 500; }
+  .close-btn { background: none; border: 0.5px solid #ccc; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; color: #666; }
+  .cart-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid #eee; }
+  .cart-item-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: var(--orange-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; }
+  .cart-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 13px; font-weight: 500; }
+  .cart-item-price { font-size: 12px; color: #777; }
+  .cart-empty { text-align: center; padding: 3rem 1rem; color: #999; }
+  .cart-empty div { font-size: 44px; margin-bottom: 0.75rem; }
+  .cart-summary { margin-top: auto; padding-top: 1.25rem; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; color: #666; }
+  .summary-row.total { font-size: 15px; font-weight: 500; color: #1a1a1a; border-top: 0.5px solid #ccc; padding-top: 8px; margin-top: 6px; }
+  .checkout-btn { width: 100%; background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 0.75rem; }
+  .checkout-btn:hover { background: var(--orange-dark); }
+  .order-success { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; text-align: center; }
+  .order-success.show { display: flex; }
+  .success-icon { font-size: 56px; margin-bottom: 1rem; }
+  .order-success h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; }
+  .order-success p { color: #777; font-size: 13px; margin-bottom: 1.5rem; }
+  .back-btn { background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 300; transition: transform 0.25s ease; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo">freshh<span>.</span></div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Farm-fresh<br>chicken, <em>daily.</em></h1>
+      <p>Premium cuts from local farms. Cleaned, weighed & packed to order.</p>
+      <div class="hero-badges">
+        <span class="hero-badge">📍 Puducherry</span>
+        <span class="hero-badge">⏱ Same-day delivery</span>
+        <span class="hero-badge">🌿 Farm fresh</span>
+      </div>
+    </div>
+    <img class="hero-img" src="https://images.pexels.com/photos/616354/pexels-photo-616354.jpeg?auto=compress&cs=tinysrgb&w=300" alt="Fresh whole chicken" onerror="this.style.display='none'" />
+  </section>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="filterProducts('All',this)">All cuts</button>
+    <button class="filter-btn" onclick="filterProducts('Whole',this)">Whole</button>
+    <button class="filter-btn" onclick="filterProducts('Breast',this)">Breast</button>
+    <button class="filter-btn" onclick="filterProducts('Leg',this)">Legs & thighs</button>
+    <button class="filter-btn" onclick="filterProducts('Wings',this)">Wings</button>
+    <button class="filter-btn" onclick="filterProducts('Mince',this)">Mince</button>
+    <button class="filter-btn" onclick="filterProducts('Boneless',this)">Boneless</button>
+  </div>
+
+  <div class="trust-bar">
+    <div class="trust-item">✅ FSSAI certified</div>
+    <div class="trust-item">🚚 Free delivery above ₹499</div>
+    <div class="trust-item">❄️ Cold chain maintained</div>
+  </div>
+
+  <main class="main">
+    <p class="section-title" id="sectionTitle">All cuts</p>
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="handleOverlayClick(event)">
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h2>Your cart</h2>
+      <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cartItems"></div>
+    <div id="cartEmpty" class="cart-empty"><div>🛒</div><p>Your cart is empty.<br>Add some fresh chicken!</p></div>
+    <div class="order-success" id="orderSuccess">
+      <div class="success-icon">✅</div>
+      <h2>Order placed!</h2>
+      <p>Your fresh chicken will be delivered today. Track your order via SMS.</p>
+      <button class="back-btn" onclick="resetOrder()">Continue shopping</button>
+    </div>
+    <div class="cart-summary" id="cartSummary" style="display:none;">
+      <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+      <div class="summary-row"><span>Delivery</span><span id="delivery">₹40</span></div>
+      <div class="summary-row total"><span>Total</span><span id="totalAmt">₹0</span></div>
+      <button class="checkout-btn" onclick="placeOrder()">Place order →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const products = [
+  { id:1,  name:"Whole chicken",      desc:"Fresh whole bird, cleaned & dressed",      price:220, unit:"per kg", category:"Whole",    badge:"Best seller", img:"https://images.pexels.com/photos/616354/pexels-photo-616354.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🐔" },
+  { id:2,  name:"Chicken breast",     desc:"Skinless boneless breast, lean cut",        price:320, unit:"per kg", category:"Breast",   badge:"Popular",     img:"https://images.pexels.com/photos/4110462/pexels-photo-4110462.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🍗" },
+  { id:3,  name:"Chicken thighs",     desc:"Juicy bone-in thighs, full flavour",        price:240, unit:"per kg", category:"Leg",      badge:"",            img:"https://images.pexels.com/photos/6210876/pexels-photo-6210876.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🍖" },
+  { id:4,  name:"Drumsticks",         desc:"Tender drumsticks, great for grilling",     price:230, unit:"per kg", category:"Leg",      badge:"",            img:"https://images.pexels.com/photos/1059943/pexels-photo-1059943.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🦵" },
+  { id:5,  name:"Chicken wings",      desc:"Crispy wings, perfect for fry",             price:280, unit:"per kg", category:"Wings",    badge:"Trending",    img:"https://images.pexels.com/photos/5718104/pexels-photo-5718104.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"✈️" },
+  { id:6,  name:"Chicken mince",      desc:"Freshly minced, great for kebabs",          price:290, unit:"per kg", category:"Mince",    badge:"",            img:"https://images.pexels.com/photos/3843447/pexels-photo-3843447.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🥩" },
+  { id:7,  name:"Boneless curry cut", desc:"Cubed boneless pieces for curries",         price:350, unit:"per kg", category:"Boneless", badge:"Chef's pick", img:"https://images.pexels.com/photos/4110461/pexels-photo-4110461.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🍲" },
+  { id:8,  name:"Liver & gizzards",   desc:"Rich in iron, cleaned & ready",             price:160, unit:"per kg", category:"Whole",    badge:"",            img:"https://images.pexels.com/photos/8753572/pexels-photo-8753572.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"❤️" },
+  { id:9,  name:"Boneless strips",    desc:"Thin strips for stir fry & rolls",          price:360, unit:"per kg", category:"Boneless", badge:"",            img:"https://images.pexels.com/photos/6210878/pexels-photo-6210878.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🌯" },
+  { id:10, name:"Leg quarter",        desc:"Full leg with thigh, bone-in",              price:210, unit:"per kg", category:"Leg",      badge:"",            img:"https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🦴" },
+  { id:11, name:"Wing tips",          desc:"Crispy tips for stocks & broths",           price:140, unit:"per kg", category:"Wings",    badge:"",            img:"https://images.pexels.com/photos/5718026/pexels-photo-5718026.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🫙" },
+  { id:12, name:"Keema (spiced)",     desc:"Minced chicken with mild spices",           price:310, unit:"per kg", category:"Mince",    badge:"New",         img:"https://images.pexels.com/photos/3843421/pexels-photo-3843421.jpeg?auto=compress&cs=tinysrgb&w=400", fb:"🧄" },
+];
+
+let cart = {}, currentFilter = "All";
+
+function filterProducts(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sectionTitle').textContent = cat === 'All' ? 'All cuts' : cat;
+  renderProducts();
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  const filtered = currentFilter === 'All' ? products : products.filter(p => p.category === currentFilter);
+  grid.innerHTML = filtered.map(p => {
+    const qty = cart[p.id] || 0;
+    return `<div class="product-card">
+      <div class="product-img-wrap">
+        ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="fallback">${p.fb}</div>
+      </div>
+      <div class="product-body">
+        <p class="product-name">${p.name}</p>
+        <p class="product-desc">${p.desc}</p>
+        <div class="product-footer">
+          <div class="product-price">₹${p.price} <span>${p.unit}</span></div>
+          ${qty === 0
+            ? `<button class="add-btn" onclick="addToCart(${p.id})">+</button>`
+            : `<div class="qty-ctrl"><button onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button onclick="changeQty(${p.id},1)">+</button></div>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  const p = products.find(x => x.id === id);
+  showToast(p.fb + ' ' + p.name + ' added');
+  updateCartCount(); renderProducts();
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  updateCartCount(); renderProducts();
+  if (document.getElementById('cartOverlay').classList.contains('open')) renderCartItems();
+}
+
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = Object.values(cart).reduce((a,b) => a+b, 0);
+}
+
+function toggleCart() {
+  document.getElementById('cartOverlay').classList.toggle('open');
+  if (document.getElementById('cartOverlay').classList.contains('open')) renderCartItems();
+}
+
+function handleOverlayClick(e) { if (e.target.id === 'cartOverlay') toggleCart(); }
+
+function renderCartItems() {
+  const container = document.getElementById('cartItems');
+  const empty = document.getElementById('cartEmpty');
+  const summary = document.getElementById('cartSummary');
+  const success = document.getElementById('orderSuccess');
+  if (success.classList.contains('show')) return;
+  const items = Object.entries(cart);
+  if (!items.length) { container.innerHTML=''; empty.style.display='block'; summary.style.display='none'; return; }
+  empty.style.display='none'; summary.style.display='block';
+  let subtotal = 0;
+  container.innerHTML = items.map(([id, qty]) => {
+    const p = products.find(x => x.id === parseInt(id));
+    const tot = p.price * qty; subtotal += tot;
+    return `<div class="cart-item">
+      <div class="cart-item-thumb"><img src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.parentElement.textContent='${p.fb}';"></div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">${qty} kg × ₹${p.price} = ₹${tot}</div>
+      </div>
+      <div class="qty-ctrl"><button onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button onclick="changeQty(${p.id},1)">+</button></div>
+    </div>`;
+  }).join('');
+  const delivery = subtotal >= 499 ? 0 : 40;
+  document.getElementById('subtotal').textContent = '₹' + subtotal;
+  document.getElementById('delivery').textContent = delivery === 0 ? 'Free' : '₹' + delivery;
+  document.getElementById('totalAmt').textContent = '₹' + (subtotal + delivery);
+}
+
+function placeOrder() {
+  document.getElementById('cartItems').innerHTML='';
+  document.getElementById('cartEmpty').style.display='none';
+  document.getElementById('cartSummary').style.display='none';
+  document.getElementById('orderSuccess').classList.add('show');
+  cart={}; updateCartCount(); renderProducts();
+}
+
+function resetOrder() {
+  document.getElementById('orderSuccess').classList.remove('show');
+  toggleCart();
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+renderProducts();
+</script>
+</body>
+</html>
